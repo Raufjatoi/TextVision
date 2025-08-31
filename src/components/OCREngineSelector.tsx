@@ -8,17 +8,20 @@ export const OCREngineSelector = ({ selectedEngine, onEngineChange }: OCREngineS
     {
       id: "tesseract",
       name: "Tesseract",
-      description: "Best for scanned documents"
+      description: "Best for scanned documents",
+      available: true
     },
     {
       id: "easyocr", 
       name: "EasyOCR",
-      description: "Python-first, 80+ languages"
+      description: "Python-first, 80+ languages",
+      available: false
     },
     {
       id: "paddleocr",
       name: "PaddleOCR", 
-      description: "Advanced layout analysis"
+      description: "Advanced layout analysis",
+      available: false
     }
   ];
 
@@ -29,8 +32,12 @@ export const OCREngineSelector = ({ selectedEngine, onEngineChange }: OCREngineS
         {engines.map((engine) => (
           <div 
             key={engine.id}
-            className="bg-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/20 transition-all border border-white/20"
-            onClick={() => onEngineChange(engine.id)}
+            className={`bg-white/10 rounded-xl p-4 transition-all border border-white/20 ${
+              engine.available 
+                ? 'cursor-pointer hover:bg-white/20' 
+                : 'opacity-50 cursor-not-allowed'
+            }`}
+            onClick={() => engine.available && onEngineChange(engine.id)}
           >
             <div className="flex items-center space-x-3">
               <input 
@@ -38,11 +45,19 @@ export const OCREngineSelector = ({ selectedEngine, onEngineChange }: OCREngineS
                 name="ocr-engine" 
                 value={engine.id}
                 checked={selectedEngine === engine.id}
-                onChange={() => onEngineChange(engine.id)}
-                className="text-paradise accent-paradise"
+                onChange={() => engine.available && onEngineChange(engine.id)}
+                disabled={!engine.available}
+                className="text-paradise accent-paradise disabled:opacity-50"
               />
-              <div>
-                <h4 className="text-white font-semibold">{engine.name}</h4>
+              <div className="flex-1">
+                <div className="flex items-center space-x-2">
+                  <h4 className="text-white font-semibold">{engine.name}</h4>
+                  {!engine.available && (
+                    <span className="bg-burgundy text-white text-xs px-2 py-1 rounded-full">
+                      Coming Soon
+                    </span>
+                  )}
+                </div>
                 <p className="text-lavender text-sm">{engine.description}</p>
               </div>
             </div>

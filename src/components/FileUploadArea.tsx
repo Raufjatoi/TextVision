@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { CloudUpload, Settings, Copy, Download, Check } from "lucide-react";
+import { CloudUpload, Settings, Copy, Download, Check, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { extractTextFromImage } from "@/utils/ocrService";
 import { AIAnalysisSection } from "./AIAnalysisSection";
@@ -15,6 +15,7 @@ export const FileUploadArea = ({ selectedEngine }: FileUploadAreaProps) => {
   const [extractedText, setExtractedText] = useState("");
   const [copied, setCopied] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -109,6 +110,12 @@ export const FileUploadArea = ({ selectedEngine }: FileUploadAreaProps) => {
     URL.revokeObjectURL(url);
   };
 
+  const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
   return (
     <>
       {/* File Upload Area */}
@@ -124,7 +131,25 @@ export const FileUploadArea = ({ selectedEngine }: FileUploadAreaProps) => {
             <div>
               <CloudUpload className="text-6xl text-paradise mb-4 mx-auto h-16 w-16" />
               <h3 className="text-2xl font-semibold text-white mb-2">Drop your image here</h3>
-              <p className="text-lavender mb-4">or click to browse files</p>
+              <p className="text-lavender mb-4">or choose an option below</p>
+              
+              <div className="flex justify-center space-x-4 mb-4">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-paradise hover:bg-burgundy text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <CloudUpload className="h-5 w-5" />
+                  <span>Browse Files</span>
+                </button>
+                <button
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="bg-vanilla-ice hover:bg-paradise text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Camera className="h-5 w-5" />
+                  <span>Take Photo</span>
+                </button>
+              </div>
+              
               <p className="text-sm text-white/70">Supports JPG, PNG, JPEG files</p>
               <input 
                 ref={fileInputRef}
@@ -132,6 +157,14 @@ export const FileUploadArea = ({ selectedEngine }: FileUploadAreaProps) => {
                 className="hidden" 
                 accept=".jpg,.jpeg,.png"
                 onChange={handleFileSelect}
+              />
+              <input 
+                ref={cameraInputRef}
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraCapture}
               />
             </div>
           ) : (
